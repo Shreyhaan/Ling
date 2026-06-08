@@ -1,0 +1,6 @@
+glottocode,name,level,macroarea,isocodes,latitude,longitude
+lang1234,Lang & One,language,Eurasia,lan,20.0,78.0
+dial1234,Dialect <Two>,dialect,Eurasia,,21.0,79.0
+outo1234,Outside,language,Eurasia,out,45.0,80.0
+west1234,West Outside,language,Eurasia,wes,20.0,40.0
+both1234,Both Three,language,Eurasia,bot,10.0,90.0
