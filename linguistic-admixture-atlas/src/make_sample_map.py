@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from html import escape
 from pathlib import Path
 
 from utils import parse_float, read_csv_rows
@@ -27,8 +26,8 @@ def project(longitude: float, latitude: float) -> tuple[float, float]:
 
 def point_style(row: dict[str, str]) -> str:
     """Style points by Grambank/PHOIBLE availability for the first audit map."""
-    in_grambank = row.get("in_grambank", "").lower() == "true"
-    in_phoible = row.get("in_phoible", "").lower() == "true"
+    in_grambank = row.get("in_grambank") == "true"
+    in_phoible = row.get("in_phoible") == "true"
     if in_grambank and in_phoible:
         return "#d73027"
     if in_grambank:
@@ -47,17 +46,14 @@ def main() -> None:
         if latitude is None or longitude is None:
             continue
         x, y = project(longitude, latitude)
-        name = escape(row.get("name", ""))
-        code = escape(row.get("glottocode", ""))
+        name = row.get("name", "")
+        code = row.get("glottocode", "")
         circles.append(
             f'<circle cx="{x:.2f}" cy="{y:.2f}" r="3.2" fill="{point_style(row)}" opacity="0.78">'
             f'<title>{name} ({code})</title></circle>'
         )
 
-    both = sum(
-        row.get("in_grambank", "").lower() == "true" and row.get("in_phoible", "").lower() == "true"
-        for row in rows
-    )
+    both = sum(row.get("in_grambank") == "true" and row.get("in_phoible") == "true" for row in rows)
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}" role="img" aria-label="Candidate South/Central Asian language sample">
   <rect width="100%" height="100%" fill="white"/>
   <text x="{PADDING}" y="35" font-family="sans-serif" font-size="22" font-weight="700">Candidate South/Central Asian language sample</text>
