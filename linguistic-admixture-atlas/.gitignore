@@ -1,0 +1,13 @@
+# Large externally downloaded datasets are kept out of git.
+data_raw/glottolog/*
+data_raw/grambank/*
+data_raw/phoible/*
+!data_raw/glottolog/.gitkeep
+!data_raw/grambank/.gitkeep
+!data_raw/phoible/.gitkeep
+!data_raw/README.md
+
+# Python caches
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
