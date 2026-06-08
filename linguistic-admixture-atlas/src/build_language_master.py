@@ -12,11 +12,8 @@ import zipfile
 from pathlib import Path
 
 from utils import (
-    field_value,
     first_existing_path,
     in_south_asia_box,
-    is_true,
-    optional_column,
     parse_float,
     pick_column,
     read_csv_rows,
@@ -34,9 +31,6 @@ OUT_PATH = OUT_DIR / "languages_master.csv"
 MASTER_COLUMNS = [
     "glottocode",
     "name",
-    "level",
-    "macroarea",
-    "isocodes",
     "family",
     "classification",
     "latitude",
@@ -58,9 +52,6 @@ def read_glottolog_geo() -> tuple[list[dict[str, str]], dict[str, str]]:
         "name": pick_column(columns, ["name", "Name", "language", "Language"], label="name"),
         "latitude": pick_column(columns, ["latitude", "Latitude", "lat", "Lat"], label="latitude"),
         "longitude": pick_column(columns, ["longitude", "Longitude", "lon", "Lon", "lng"], label="longitude"),
-        "level": optional_column(columns, ["level", "Level", "languoid_level", "Languoid_Level"]),
-        "macroarea": optional_column(columns, ["macroarea", "Macroarea", "macro_area", "Macro_Area"]),
-        "isocodes": optional_column(columns, ["isocodes", "Isocodes", "iso639P3code", "ISO639P3code", "iso_code"]),
     }
     print("Glottolog geo columns:")
     print(list(columns))
@@ -88,12 +79,12 @@ def read_glottolog_languoid_metadata() -> dict[str, dict[str, str]]:
         return {}
     columns = rows[0].keys()
     code_col = pick_column(columns, ["id", "glottocode", "Glottocode", "ID"], label="languoid Glottocode")
-    family_col = optional_column(columns, ["family", "Family", "top_level", "Top_Level"])
-    classification_col = optional_column(columns, ["classification", "Classification", "lineage", "Lineage"])
-    name_col = optional_column(columns, ["name", "Name"])
-    level_col = optional_column(columns, ["level", "Level", "languoid_level", "Languoid_Level"])
-    macroarea_col = optional_column(columns, ["macroarea", "Macroarea", "macro_area", "Macro_Area"])
-    isocodes_col = optional_column(columns, ["isocodes", "Isocodes", "iso639P3code", "ISO639P3code", "iso_code"])
+    family_col = next((column for column in ["family", "Family", "top_level", "Top_Level"] if column in columns), None)
+    classification_col = next(
+        (column for column in ["classification", "Classification", "lineage", "Lineage"] if column in columns),
+        None,
+    )
+    name_col = next((column for column in ["name", "Name"] if column in columns), None)
 
     print("Glottolog languoid columns:")
     print(list(columns))
@@ -107,9 +98,6 @@ def read_glottolog_languoid_metadata() -> dict[str, dict[str, str]]:
             "family": row.get(family_col, "").strip() if family_col else "",
             "classification": row.get(classification_col, "").strip() if classification_col else "",
             "languoid_name": row.get(name_col, "").strip() if name_col else "",
-            "level": row.get(level_col, "").strip() if level_col else "",
-            "macroarea": row.get(macroarea_col, "").strip() if macroarea_col else "",
-            "isocodes": row.get(isocodes_col, "").strip() if isocodes_col else "",
         }
     return metadata
 
@@ -158,9 +146,6 @@ def build_master() -> list[dict[str, object]]:
             {
                 "glottocode": code,
                 "name": row.get(geo_columns["name"], "").strip() or metadata.get("languoid_name", ""),
-                "level": field_value(row, geo_columns.get("level"), metadata.get("level", "")),
-                "macroarea": field_value(row, geo_columns.get("macroarea"), metadata.get("macroarea", "")),
-                "isocodes": field_value(row, geo_columns.get("isocodes"), metadata.get("isocodes", "")),
                 "family": metadata.get("family", ""),
                 "classification": metadata.get("classification", ""),
                 "latitude": latitude,
@@ -176,9 +161,9 @@ def build_master() -> list[dict[str, object]]:
 
 def print_counts(master_rows: list[dict[str, object]]) -> None:
     """Print the initial feasibility counts."""
-    in_grambank = sum(is_true(row["in_grambank"]) for row in master_rows)
-    in_phoible = sum(is_true(row["in_phoible"]) for row in master_rows)
-    in_both = sum(is_true(row["in_grambank"]) and is_true(row["in_phoible"]) for row in master_rows)
+    in_grambank = sum(row["in_grambank"] == "true" for row in master_rows)
+    in_phoible = sum(row["in_phoible"] == "true" for row in master_rows)
+    in_both = sum(row["in_grambank"] == "true" and row["in_phoible"] == "true" for row in master_rows)
 
     print()
     print("Wrote:", OUT_PATH)

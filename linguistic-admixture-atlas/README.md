@@ -67,9 +67,6 @@ It writes `data_processed/languages_master.csv` with these initial columns:
 
 - `glottocode`
 - `name`
-- `level`
-- `macroarea`
-- `isocodes`
 - `family`
 - `classification`
 - `latitude`
@@ -83,19 +80,6 @@ It also prints the first feasibility counts:
 - Number in Grambank.
 - Number in PHOIBLE.
 - Number in both Grambank and PHOIBLE.
-
-## First feasibility counts
-
-Generated on: 2026-06-08
-
-> Counts are filled in after the raw Glottolog, Grambank, and PHOIBLE data are locally available and `python src/build_language_master.py` completes.
-
-| Quantity | Count |
-|---|---:|
-| South/Central Asia Glottolog coordinate candidates | TBD |
-| In Grambank | TBD |
-| In PHOIBLE | TBD |
-| In both Grambank and PHOIBLE | TBD |
 
 ## First map
 

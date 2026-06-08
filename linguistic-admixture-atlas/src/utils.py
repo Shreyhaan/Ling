@@ -46,25 +46,6 @@ def first_existing_path(paths: Iterable[Path]) -> Path:
     raise FileNotFoundError(f"None of the expected paths exists:\n{formatted}")
 
 
-def optional_column(columns: Iterable[str], candidates: Iterable[str]) -> str | None:
-    """Return the first matching column name if present, otherwise None."""
-    columns_list = list(columns)
-    lower_to_original = {column.lower(): column for column in columns_list}
-    for candidate in candidates:
-        match = lower_to_original.get(candidate.lower())
-        if match is not None:
-            return match
-    return None
-
-
-def field_value(row: dict[str, str], column: str | None, fallback: str = "") -> str:
-    """Read and strip an optional CSV field, falling back for missing/blank values."""
-    if column is None:
-        return fallback
-    value = row.get(column, "").strip()
-    return value if value else fallback
-
-
 def pick_column(columns: Iterable[str], candidates: Iterable[str], *, label: str) -> str:
     """Pick the first matching column name, case-insensitively."""
     columns_list = list(columns)
@@ -108,8 +89,3 @@ def in_south_asia_box(latitude: float | None, longitude: float | None) -> bool:
 def truthy_csv(value: object) -> str:
     """Normalize booleans for stable CSV output."""
     return "true" if bool(value) else "false"
-
-
-def is_true(value: object) -> bool:
-    """Return True for case-insensitive CSV boolean strings."""
-    return str(value).strip().lower() == "true"
